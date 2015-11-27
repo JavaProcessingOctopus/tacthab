@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="projetmm">
+<head>
+    <meta charset="UTF-8">
+    <script src="./bower_components/angular/angular.min.js"></script>
+    <script src="./bower_components/angular-aria/angular-aria.js"></script>
+    <script src="./bower_components/angular-animate/angular-animate.js"></script>
+    <script src="./bower_components/angular-material/angular-material.js"></script>
+    <script src="./bower_components/angular-toArrayFilter/toArrayFilter.js"></script>
+    <script src="./bundleUPnP.js"></script>
+    
+    <link rel="stylesheet" href="/bower_components/angular-material/angular-material.css" />
+
+    <title>projet UPnP</title>
+</head>
+    <body ng-controller="mmcontroller as ctrl">
+    <h1>Mon projet IHM YOOOO</h1>
+    <!--<h1>Hello {{mmc.name}}!</h1>-->
+    <!--<hr/>-->
+    <!--<p ng-bind="mmc.name"></p>-->
+    <!--
+    <section>
+    	<section ng-repeat="element in ctrl.bricks">
+    		<p ng-bind="element.name"></p>
+    		<p ng-bind="element.type"></p>
+    		<img ng-src="{{element.iconURL}}" ng-click="ctrl.Browse(element)"/>
+    	
+    	</section>
+    </section>
+    -->
+    <media-explorer title   = "Explorateur de media UPnP" 
+                    bricks  = "ctrl.bricks"
+                    ></media-explorer>
+</body>
+</html>

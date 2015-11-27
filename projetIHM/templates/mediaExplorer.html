@@ -1,0 +1,52 @@
+<h2>{{title}}</h2>
+<section class="breadCrumb">
+	<label ng-repeat="item in controller.breadCrumb">
+		-- <a href="#" ng-click="controller.goto(item)">{{item.label}}</a>
+	</label>
+</section>
+
+<md-content layout="row" layout-wrap layout-align="left start">
+	<!-- Servers -->
+	<md-content class="servers">
+	<md-card ng-repeat	= "server in controller.mediaServers | toArray:false | filter:{type:'BrickUPnP_MediaServer'}" 
+			 ng-click	= "controller.Browse(server)"
+			 flex		= "80"
+			 >
+		<img ng-src="{{server.iconURL}}" class="md-card-image" alt="{{server.name}}">
+		<md-card-title>
+			<md-card-title-text>
+				<span class="md-headline">{{server.name}}</span>
+			</md-card-title-text>
+		</md-card-title>
+		<md-card-content>
+	</md-card>
+
+	<!-- Containers -->
+	<md-content class="containers">
+		<md-card ng-repeat="container in controller.containers"
+				 ng-click	= "controller.Browse(controller.currentServer, container)">
+	        <md-card-title>
+				<md-card-title-text>
+					<span class="md-headline">{{container.title}}</span>
+					<span class="md-subhead">descr</span>
+				</md-card-title-text>
+				<md-card-title-media>
+					<div class="md-media-lg card-media"></div>
+				</md-card-title-media>
+			</md-card-title>
+			<md-card-actions layout="row" layout-align="end center">
+				<md-button>Action 1</md-button>
+				<md-button>Action 2</md-button>
+			</md-card-actions>
+      	</md-card>
+
+	</md-content>
+
+	<!-- Medias -->
+	<md-content class="medias">
+		<md-card class="media" ng-repeat="media in controller.medias">
+			{{media | json}}
+		</md-card>
+	</md-content>
+
+</md-content>
