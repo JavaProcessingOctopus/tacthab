@@ -13,7 +13,7 @@ function($http, $scope){
 
 	
 	$http.get("/getContext").success(function(data){
-			    console.log(data);
+			  console.log("DATA", data);
 			ctrl.bricks = data.bricks;
 			utils.io.on("brickAppears",
 				function(data){
@@ -27,38 +27,36 @@ function($http, $scope){
 					delete ctrl.bricks[data.brickId];
 					$scope.$apply();
 				});
-			data.bricks.tot={name:"Flo", iconURL:"https://upload.wikimedia.org/wikipedia/en/8/84/Flo_from_Progressive_Insurance.jpg"}
 		});
-
-
 }).directive("mediaExplorer", function (){
 	return {
-		  restrict		: 'E'
+		  restrict	: 'E'
 		, templateUrl	: "/projetIHM/templates/mediaExplorer.html"
-		, scope			: {
+		, scope		: {
 			  bricks 	: "=bricks"
 			, title 	: "@title"
 		}
 		,controllerAs	: "controller"
 		,controller 	: function($scope) {
-			var controller = this;
+			var controller    = this;
 			this.mediaServers = $scope.bricks;
 			this.containers   = [];
 			this.medias       = [];
-			this.breadCrumb   =	[ {label: "Serveurs"}
-								];
-			this.goto	= function(item) {
-				 // Update breadcrumb
-				 var pos = this.breadcrumb.indexOf(item);
-				 this.breadcrumb.splice(pos+1, this.breadcrumb.length);
+			this.breadCrumb   =[{label: "Serveurs"}];
+			this.goto	  = function(item) {
+				 var pos = controller.breadCrumb.indexOf(item);
 				 // Update remated data
-
+                                   for(attr in controller.breadCrumb[pos]){
+                                     controller[attr] = controller.breadCrumb[pos][attr];
+                                   }
+				 // Update breadcrumb
+				 controller.breadCrumb.splice(pos, controller.breadCrumb.length);
 				}
 			this.Browse = function(mediaServer, container){
-				this.breadCrumb.push( { label: container?container.title:mediaServer.name
+				this.breadCrumb.push( { label: container ? container.title : mediaServer.name
 									  , mediaServers	: this.mediaServers
 									  , containers 		: this.containers
-									  , medias 			: this.medias
+									  , medias 		: this.medias
 									  } 
 									);
 
@@ -66,7 +64,7 @@ function($http, $scope){
 				this.currentServer= mediaServer;
 				this.mediaServers = [];
 				this.containers   = [];
-				this.medias       = [];
+				this.medias     = [];
 				console.log("Browse dans la brick",mediaServer, containerId);
 
 				utils.call	( mediaServer.id
@@ -76,10 +74,12 @@ function($http, $scope){
 										 console.log("Browse => ", res);
 										 var doc = parser.parseFromString(res, "text/xml")
 										   , Result;
+                                                                                console.log(doc)
 										 if (  doc 
 										 	&& (Result = doc.querySelector("Result"))
 										 	) {
 										 	var docResult = parser.parseFromString(Result.textContent, "text/xml");
+                                                                                          console.log("docRESULT : ", docResult)
 										 	if(docResult) {
 										 		// Mise à jour des containers
 										 		var containersXML = docResult.querySelectorAll( "container" );
@@ -93,7 +93,17 @@ function($http, $scope){
 										 			}
 
 										 		 // Mise à jour des médias
-										 		 // ...
+                                                                                                 var mediasXML = docResult.querySelectorAll("item");
+                                                                                                 console.log(mediasXML)
+                                                                                                 for(i=0 ; i< mediasXML.length ; i++){
+                                                                                                   controller.medias.push(
+                                                                                                       {
+                                                                                                         id: mediasXML[i].getAttribute("id"),
+                                                                                                         title : mediasXML[i].querySelector("title").textContent,
+                                                                                                         author : mediasXML[i].querySelector("creator").textContent
+                                                                                                       }
+                                                                                                       )
+                                                                                                 }
 
 										 		 // Met à jour l'affichage
 										 		 $scope.$apply(); // Forcer la synchronisation du HTML avec les données via Angular...
