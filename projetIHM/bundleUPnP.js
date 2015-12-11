@@ -56,11 +56,16 @@
 			.controller("mmcontroller", 
 	function($http, $scope){
 		var ctrl = this;
-
+	        this.bricks = {}
 		
 		$http.get("/getContext").success(function(data){
-				    console.log(data);
-				ctrl.bricks = data.bricks;
+				  console.log("DATA", data);
+				
+	                          var i;
+	                          for(i in data.bricks) {
+	                            ctrl.bricks[i] = data.bricks[i];
+	                          }
+
 				utils.io.on("brickAppears",
 					function(data){
 						console.log("brickAppears", data);
@@ -73,38 +78,41 @@
 						delete ctrl.bricks[data.brickId];
 						$scope.$apply();
 					});
-				data.bricks.tot={name:"Flo", iconURL:"https://upload.wikimedia.org/wikipedia/en/8/84/Flo_from_Progressive_Insurance.jpg"}
 			});
-
-
 	}).directive("mediaExplorer", function (){
 		return {
-			  restrict		: 'E'
+			  restrict	: 'E'
 			, templateUrl	: "/projetIHM/templates/mediaExplorer.html"
-			, scope			: {
+			, scope		: {
 				  bricks 	: "=bricks"
 				, title 	: "@title"
 			}
 			,controllerAs	: "controller"
 			,controller 	: function($scope) {
-				var controller = this;
-				this.mediaServers = $scope.bricks;
+				var controller    = this;
+	                        this.mediaServers = {};
+	                        for(var brick in $scope.bricks){
+	                          if($scope.bricks[brick].type[2] === "BrickUPnP_MediaServer"){
+	                            this.mediaServers[brick] = $scope.bricks[brick];
+	                          }
+	                        }
 				this.containers   = [];
 				this.medias       = [];
-				this.breadCrumb   =	[ {label: "Serveurs"}
-									];
-				this.goto	= function(item) {
-					 // Update breadcrumb
-					 var pos = this.breadcrumb.indexOf(item);
-					 this.breadcrumb.splice(pos+1, this.breadcrumb.length);
+				this.breadCrumb   = [{label: "Serveurs"}];
+				this.goto	  = function(item) {
+					 var pos = controller.breadCrumb.indexOf(item);
 					 // Update remated data
-
+	                                   for(var attr in controller.breadCrumb[pos]){
+	                                     controller[attr] = controller.breadCrumb[pos][attr];
+	                                   }
+					 // Update breadcrumb
+					 controller.breadCrumb.splice(pos, controller.breadCrumb.length);
 					}
 				this.Browse = function(mediaServer, container){
-					this.breadCrumb.push( { label: container?container.title:mediaServer.name
+					this.breadCrumb.push( { label: container ? container.title : mediaServer.name
 										  , mediaServers	: this.mediaServers
 										  , containers 		: this.containers
-										  , medias 			: this.medias
+										  , medias 		: this.medias
 										  } 
 										);
 
@@ -122,10 +130,12 @@
 											 console.log("Browse => ", res);
 											 var doc = parser.parseFromString(res, "text/xml")
 											   , Result;
+	                                                                                console.log(doc)
 											 if (  doc 
 											 	&& (Result = doc.querySelector("Result"))
 											 	) {
 											 	var docResult = parser.parseFromString(Result.textContent, "text/xml");
+	                                                                                          console.log("docRESULT : ", docResult)
 											 	if(docResult) {
 											 		// Mise à jour des containers
 											 		var containersXML = docResult.querySelectorAll( "container" );
@@ -139,7 +149,24 @@
 											 			}
 
 											 		 // Mise à jour des médias
-											 		 // ...
+	                                                                                                 var mediasXML = docResult.querySelectorAll("item");
+	                                                                                                 console.log(mediasXML)
+	                                                                                                 var title;
+	                                                                                                 var author; 
+	                                                                                                 var art;
+	                                                                                                 for(i=0 ; i< mediasXML.length ; i++){
+	                                                                                                   title = mediasXML[i].querySelector("title");
+	                                                                                                   author = mediasXML[i].querySelector("creator");
+	                                                                                                   art = mediasXML[i].querySelector("albumArtURI");
+	                                                                                                   controller.medias.push(
+	                                                                                                       {
+	                                                                                                         id: mediasXML[i].getAttribute("id"),
+	                                                                                                         title : title ? title.textContent : "Unknown",
+	                                                                                                         author : author ? author.textContent : "Unknown",
+	                                                                                                         img: art ? art.textContent : "Unknown"
+	                                                                                                       }
+	                                                                                                       )
+	                                                                                                 }
 
 											 		 // Met à jour l'affichage
 											 		 $scope.$apply(); // Forcer la synchronisation du HTML avec les données via Angular...
@@ -163,7 +190,27 @@
 				this.breadCrumb=[];
 			}
 		}
+	}).directive("mediaPlayer", function(){
+		return {
+			restrict:'E'
+			,templateUrl: "/projetIHM/templates/mediaPlayer.html"
+			,scope:{
+				bricks:"=bricks"
+				,title:"@title"
+			}
+			,controllerAs: "mediaPlayerController"
+			,controller:function($scope){
+				var controller    = this;
+	                        this.mediaRenderers = {};
+	                        for(var brick in $scope.bricks){
+	                          if($scope.bricks[brick].type[2] === "BrickUPnP_MediaRenderer"){
+	                            this.mediaRederers[brick] = $scope.bricks[brick];
+	                          }
+	                        }
+		      }
+	        }
 	});
+
 
 /***/ },
 /* 1 */

@@ -45,7 +45,7 @@ function($http, $scope){
 		,controller 	: function($scope) {
 			var controller    = this;
                         this.mediaServers = {};
-                        for(brick in $scope.bricks){
+                        for(var brick in $scope.bricks){
                           if($scope.bricks[brick].type[2] === "BrickUPnP_MediaServer"){
                             this.mediaServers[brick] = $scope.bricks[brick];
                           }
@@ -56,7 +56,7 @@ function($http, $scope){
 			this.goto	  = function(item) {
 				 var pos = controller.breadCrumb.indexOf(item);
 				 // Update remated data
-                                   for(attr in controller.breadCrumb[pos]){
+                                   for(var attr in controller.breadCrumb[pos]){
                                      controller[attr] = controller.breadCrumb[pos][attr];
                                    }
 				 // Update breadcrumb
@@ -156,19 +156,11 @@ function($http, $scope){
 		,controller:function($scope){
 			var controller    = this;
                         this.mediaRenderers = {};
-                        for(brick in $scope.bricks){
+                        for(var brick in $scope.bricks){
                           if($scope.bricks[brick].type[2] === "BrickUPnP_MediaRenderer"){
                             this.mediaRederers[brick] = $scope.bricks[brick];
                           }
                         }
-			this.Browse = function(mediaServer, container){
-				this.mediaServers = [];
-				this.containers   = [];
-				this.medias       = [];
-				console.log("Browse dans la brick",mediaServer, containerId);
-
-
-		        }
 	      }
         }
 });
