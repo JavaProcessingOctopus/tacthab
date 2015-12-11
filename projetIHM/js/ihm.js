@@ -167,6 +167,8 @@ function($http, $scope){
 				this.medias       = [];
 				console.log("Browse dans la brick",mediaServer, containerId);
 
-		}
-	}
+
+		        }
+	      }
+        }
 });
