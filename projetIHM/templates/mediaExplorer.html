@@ -46,11 +46,10 @@
 	<md-content class="medias">
 		<md-card class="media" ng-repeat="media in controller.medias">
                   <md-card-title-text>
+                    <img src={{media.img}}></img>
                     <span class="md-headline">{{media.title}}</span>
                     <span class="md-subhead">By {{media.author}}</span>
                   </md-card-title-text>
-			{{media | json}}
 		</md-card>
 	</md-content>
-
 </md-content>

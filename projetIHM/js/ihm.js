@@ -10,11 +10,16 @@ angular.module("projetmm",["ngMaterial","angular-toArrayFilter"])
 		.controller("mmcontroller", 
 function($http, $scope){
 	var ctrl = this;
-
+        this.bricks = {}
 	
 	$http.get("/getContext").success(function(data){
 			  console.log("DATA", data);
-			ctrl.bricks = data.bricks;
+			
+                          var i;
+                          for(i in data.bricks) {
+                            ctrl.bricks[i] = data.bricks[i];
+                          }
+
 			utils.io.on("brickAppears",
 				function(data){
 					console.log("brickAppears", data);
@@ -42,7 +47,7 @@ function($http, $scope){
 			this.mediaServers = $scope.bricks;
 			this.containers   = [];
 			this.medias       = [];
-			this.breadCrumb   =[{label: "Serveurs"}];
+			this.breadCrumb   = [{label: "Serveurs"}];
 			this.goto	  = function(item) {
 				 var pos = controller.breadCrumb.indexOf(item);
 				 // Update remated data
@@ -95,12 +100,19 @@ function($http, $scope){
 										 		 // Mise à jour des médias
                                                                                                  var mediasXML = docResult.querySelectorAll("item");
                                                                                                  console.log(mediasXML)
+                                                                                                 var title;
+                                                                                                 var author; 
+                                                                                                 var art;
                                                                                                  for(i=0 ; i< mediasXML.length ; i++){
+                                                                                                   title = mediasXML[i].querySelector("title");
+                                                                                                   author = mediasXML[i].querySelector("creator");
+                                                                                                   art = mediasXML[i].querySelector("albumArtURI");
                                                                                                    controller.medias.push(
                                                                                                        {
                                                                                                          id: mediasXML[i].getAttribute("id"),
-                                                                                                         title : mediasXML[i].querySelector("title").textContent,
-                                                                                                         author : mediasXML[i].querySelector("creator").textContent
+                                                                                                         title : title ? title.textContent : "Unknown",
+                                                                                                         author : author ? author.textContent : "Unknown",
+                                                                                                         img: art ? art.textContent : "Unknown"
                                                                                                        }
                                                                                                        )
                                                                                                  }
