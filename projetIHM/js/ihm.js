@@ -44,7 +44,12 @@ function($http, $scope){
 		,controllerAs	: "controller"
 		,controller 	: function($scope) {
 			var controller    = this;
-			this.mediaServers = $scope.bricks;
+                        this.mediaServers = {};
+                        for(brick in $scope.bricks){
+                          if($scope.bricks[brick].type[2] === "BrickUPnP_MediaServer"){
+                            this.mediaServers[brick] = $scope.bricks[brick];
+                          }
+                        }
 			this.containers   = [];
 			this.medias       = [];
 			this.breadCrumb   = [{label: "Serveurs"}];
@@ -69,7 +74,7 @@ function($http, $scope){
 				this.currentServer= mediaServer;
 				this.mediaServers = [];
 				this.containers   = [];
-				this.medias     = [];
+				this.medias       = [];
 				console.log("Browse dans la brick",mediaServer, containerId);
 
 				utils.call	( mediaServer.id
@@ -137,6 +142,31 @@ function($http, $scope){
 		,controllerAs:"mc"
 		,controller:function($scope){
 			this.breadCrumb=[];
+		}
+	}
+}).directive("mediaPlayer", function(){
+	return {
+		restrict:'E'
+		,templateUrl: "/projetIHM/templates/mediaPlayer.html"
+		,scope:{
+			bricks:"=bricks"
+			,title:"@title"
+		}
+		,controllerAs: "mediaPlayerController"
+		,controller:function($scope){
+			var controller    = this;
+                        this.mediaRenderers = {};
+                        for(brick in $scope.bricks){
+                          if($scope.bricks[brick].type[2] === "BrickUPnP_MediaRenderer"){
+                            this.mediaRederers[brick] = $scope.bricks[brick];
+                          }
+                        }
+			this.Browse = function(mediaServer, container){
+				this.mediaServers = [];
+				this.containers   = [];
+				this.medias       = [];
+				console.log("Browse dans la brick",mediaServer, containerId);
+
 		}
 	}
 });
